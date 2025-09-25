@@ -1,0 +1,28 @@
+#quadro{
+  border: 1px solid #000;
+  background: black;
+
+ 
+}
+div {
+  
+  justify-content: center;
+  position: absolute;
+  top: 32%;
+  left: 37%;
+  
+
+
+}
+canvas {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+html,body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: black;
+}
