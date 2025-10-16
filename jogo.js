@@ -15,7 +15,7 @@ $().ready(function () {
 
 
 
-    
+
     var projetil = {
         "vx": 0,
         "vy": -10,
@@ -54,7 +54,7 @@ $().ready(function () {
             ctx.fillStyle = this.cor;
             ctx.fillRect(this.x, this.y, this.l, this.a);
             ctx.fillStyle = "#00FFFF";
-            ctx.fillRect(this.x + this.l/2 - 2, this.y - this.ca, this.cl, this.ca);
+            ctx.fillRect(this.x + this.l / 2 - 2, this.y - this.ca, this.cl, this.ca);
         }
     }
 
@@ -74,10 +74,10 @@ $().ready(function () {
         }
     };
     function insereinimigo() {
-        for (contLinha = 1; contLinha < 5; contLinha++) {
+        for (contLinha = 0; contLinha < 5; contLinha++) {
             for (contColuna = 3; contColuna < 15; contColuna++) {
                 if (contLinha == 0) {
-                    corbarra = "lightblue";
+                    corbarra = "red";
                 } else if (contLinha == 1) {
                     corbarra = "blue";
                 } else if (contLinha == 2) {
@@ -99,13 +99,13 @@ $().ready(function () {
         return vx;
     } */
 
-        function reinicia() {
-            inimigos = [];
-            insereinimigo();
-            player1.x =  canvas.width / 2 - 80;
-            player1.y =  canvas.height - 30;
-            projetil.x = 10000;
-        }
+    function reinicia() {
+        inimigos = [];
+        insereinimigo();
+        player1.x = canvas.width / 2 - 80;
+        player1.y = canvas.height - 30;
+        projetil.x = 10000;
+    }
 
 
     function detectaColisao(o1, o2) {
@@ -120,47 +120,40 @@ $().ready(function () {
         return (base1 > top2 && dir1 > esq2 && base2 > top1 && dir2 > esq1);
     }
 
-    
+
     function desenharTela() {
-
         apagarTela();
-
         player1.atualiza();
-
         detectaLimitePlayer(player1);
         detectaLimiteObj(projetil);
-        
-        
 
-        for (contLinha = 0; contLinha < 48; contLinha++) {
-
+        // Filtra inimigos para garantir que apenas inimigos vivos sejam processados
+        for (let contLinha = inimigos.length - 1; contLinha >= 0; contLinha--) {
             if (detectaColisao(inimigos[contLinha], projetil)) {
-                inimigos[contLinha].y = -100000;
+                inimigos.splice(contLinha, 1);
                 projetil.x = 10000;
                 contplayer++;
                 console.log(contplayer);
                 tiro = false;
-            }
-            /*inimigos.push(criainimigo(100 * contColuna, contLinha * 60, corbarra)); */
-
-            
-            if (inimigos[contLinha].x+inimigos[contLinha].l > canvas.width) {
-                for (contColuna = 0; contColuna < 48; contColuna++) {
-                inimigos[contColuna].y += 50;
-                inimigos[contColuna].vx = -inimigos[contColuna].vx;
-                inimigos[contColuna].x -= 5; }
-            }
-            else if (inimigos[contLinha].x < 0) {
-                for (contColuna = 0; contColuna < 48; contColuna++) {
-                inimigos[contColuna].y += 50;
-                inimigos[contColuna].vx = -inimigos[contColuna].vx;
-                inimigos[contColuna].x += 5; }
-                direita = false;
+                continue; // importante para não executar o resto do loop para este inimigo
             }
 
-            
-
-            else if (inimigos[contLinha].y + inimigos[contLinha].a >= player1.y) {
+            // Detecta colisões com as paredes e movimenta os inimigos
+            if (inimigos[contLinha].x + inimigos[contLinha].l > canvas.width) {
+                var deslocamento = canvas.width - inimigos[contLinha].x - inimigos[contLinha].l;
+                for (let contColuna = 0; contColuna < inimigos.length; contColuna++) {
+                    inimigos[contColuna].y += 50;
+                    inimigos[contColuna].vx = -inimigos[contColuna].vx;
+                    inimigos[contColuna].x -= 5; // Ajusta todos os inimigos
+                }
+            } else if (inimigos[contLinha].x < 0) {
+                var deslocamento = -inimigos[contLinha].x;
+                for (let contColuna = 0; contColuna < inimigos.length; contColuna++) {
+                    inimigos[contColuna].y += 50;
+                    inimigos[contColuna].vx = -inimigos[contColuna].vx;
+                    inimigos[contColuna].x += 5; // Ajusta todos os inimigos
+                }
+            } else if (inimigos[contLinha].y + inimigos[contLinha].a >= player1.y) {
                 alert("Você perdeu!");
                 comecou = false;
                 reinicia();
@@ -170,21 +163,24 @@ $().ready(function () {
             inimigos[contLinha].desenharObjeto();
         }
 
-            if (contplayer == 48) {
-                alert ("Você ganhou um bis e uma coxinha! Consulte o ADM");
-                reseta();
-            }
+
+        // Ganhando a partida
+        if (contplayer == 60) {
+            alert("Você ganhou um bis e uma coxinha! Consulte o ADM");
+            reseta();
+        }
+
+        // Desenha o projetil se necessário
         if (tiro === true) {
             projetil.desenharObjeto();
             projetil.atualiza();
         }
 
-        
-
+        // Desenha o player
         player1.desenharObjeto();
-
         requestAnimationFrame(desenharTela);
     }
+
     function apagarTela() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
@@ -203,17 +199,17 @@ $().ready(function () {
             tiro = false;
             projetil.x = 100000;
         }
-        
-        
+
+
     }
 
-function reseta() {
-                comecou = false;
-                inimigos = [];
-                insereinimigo();
-                contplayer = 0;
-            }
-    
+    function reseta() {
+        comecou = false;
+        inimigos = [];
+        insereinimigo();
+        contplayer = 0;
+    }
+
     desenharTela();
     $(window).keydown(function (event) {
         if (event.which == 65) { //cima
@@ -222,19 +218,19 @@ function reseta() {
         if (event.which == 68) { //baixo
             player1.vx = 8;
 
-        } 
+        }
         if (event.which == 32) {
             if (tiro === false) {
                 tiro = true;
-                projetil.x = player1.x + player1.l/2 - 2
+                projetil.x = player1.x + player1.l / 2 - 2
                 projetil.y = player1.y - player1.ca - 2;
-                console.log("tiro");    
+                console.log("tiro");
             }
         }
 
-        
 
-    //74
+
+        //74
 
     });
 
