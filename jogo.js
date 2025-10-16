@@ -216,10 +216,10 @@ $().ready(function () {
 
     desenharTela();
     $(window).keydown(function (event) {
-        if (event.which == 65) { //cima
+        if (event.which == 37) { //cima
             player1.vx = -8;
         }
-        if (event.which == 68) { //baixo
+        if (event.which == 39) { //baixo
             player1.vx = 8;
 
         }
