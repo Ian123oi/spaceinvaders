@@ -158,11 +158,15 @@ $().ready(function () {
                 comecou = false;
                 reinicia();
             }
-
-            inimigos[contLinha].x += inimigos[contLinha].vx;
-            inimigos[contLinha].desenharObjeto();
+           
         }
 
+        for (let contLinha = inimigos.length - 1; contLinha >= 0; contLinha--) {
+
+            inimigos[contLinha].x += inimigos[contLinha].vx;
+
+            inimigos[contLinha].desenharObjeto();
+        }
 
         // Ganhando a partida
         if (contplayer == 60) {
