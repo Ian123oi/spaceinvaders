@@ -3,18 +3,12 @@ $().ready(function () {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     var ctx = canvas.getContext("2d");
-    var colisao = 0;
     var contplayer = 0;
     var inimigos = [];
-    var comecou = false;
     var contColuna = 0;
     var contLinha = 0;
     var corbarra;
     var tiro = false;
-    var direita = true;
-
-
-
 
     var projetil = {
         "vx": 0,
@@ -85,19 +79,12 @@ $().ready(function () {
                 } else if (contLinha == 3) {
                     corbarra = "orange";
                 }
-                inimigos.push(criainimigo(100 * contColuna, contLinha * 60, corbarra));
+                inimigos.push(criainimigo(100 * contColuna, contLinha * 50, corbarra));
 
             }
         }
     }
     insereinimigo();
-    /*function gerarVx() {
-        let vx;
-        do {
-            vx = Math.floor(Math.random() * 5) - 2; // de -2 a 2
-        } while (vx === 0);
-        return vx;
-    } */
 
     function reinicia() {
         inimigos = [];
@@ -105,8 +92,8 @@ $().ready(function () {
         player1.x = canvas.width / 2 - 80;
         player1.y = canvas.height - 30;
         projetil.x = 10000;
+        contplayer = 0;
     }
-
 
     function detectaColisao(o1, o2) {
         var top1 = o1.y;
@@ -127,7 +114,6 @@ $().ready(function () {
         detectaLimitePlayer(player1);
         detectaLimiteObj(projetil);
 
-        // Filtra inimigos para garantir que apenas inimigos vivos sejam processados
         for (let contLinha = inimigos.length - 1; contLinha >= 0; contLinha--) {
             if (detectaColisao(inimigos[contLinha], projetil)) {
                 inimigos.splice(contLinha, 1);
@@ -135,30 +121,26 @@ $().ready(function () {
                 contplayer++;
                 console.log(contplayer);
                 tiro = false;
-                continue; // importante para não executar o resto do loop para este inimigo
+                continue;
             }
 
-            // Detecta colisões com as paredes e movimenta os inimigos
             if (inimigos[contLinha].x + inimigos[contLinha].l > canvas.width) {
-                var deslocamento = canvas.width - inimigos[contLinha].x - inimigos[contLinha].l;
                 for (let contColuna = 0; contColuna < inimigos.length; contColuna++) {
                     inimigos[contColuna].y += 50;
                     inimigos[contColuna].vx = -inimigos[contColuna].vx;
                     inimigos[contColuna].x -= 5; // Ajusta todos os inimigos
                 }
             } else if (inimigos[contLinha].x < 0) {
-                var deslocamento = -inimigos[contLinha].x;
                 for (let contColuna = 0; contColuna < inimigos.length; contColuna++) {
                     inimigos[contColuna].y += 50;
                     inimigos[contColuna].vx = -inimigos[contColuna].vx;
-                    inimigos[contColuna].x += 5; // Ajusta todos os inimigos
+                    inimigos[contColuna].x += 5;
                 }
             } else if (inimigos[contLinha].y + inimigos[contLinha].a >= player1.y) {
                 alert("Você perdeu!");
-                comecou = false;
                 reinicia();
             }
-           
+
         }
 
         for (let contLinha = inimigos.length - 1; contLinha >= 0; contLinha--) {
@@ -168,19 +150,17 @@ $().ready(function () {
             inimigos[contLinha].desenharObjeto();
         }
 
-        // Ganhando a partida
+
         if (contplayer == 60) {
             alert("Você ganhou um bis e uma coxinha! Consulte o ADM");
-            reseta();
+            reinicia();
         }
 
-        // Desenha o projetil se necessário
         if (tiro === true) {
             projetil.desenharObjeto();
             projetil.atualiza();
         }
 
-        // Desenha o player
         player1.desenharObjeto();
         requestAnimationFrame(desenharTela);
     }
@@ -204,14 +184,6 @@ $().ready(function () {
             projetil.x = 100000;
         }
 
-
-    }
-
-    function reseta() {
-        comecou = false;
-        inimigos = [];
-        insereinimigo();
-        contplayer = 0;
     }
 
     desenharTela();
@@ -234,7 +206,7 @@ $().ready(function () {
 
 
 
-        //74
+
 
     });
 
